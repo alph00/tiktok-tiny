@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-RUN_NAME="auth"
+RUN_NAME="PublishService"
 
 mkdir -p output/bin
 cp script/* output/
