@@ -1,0 +1,14 @@
+Global:
+  Source: "config(local)"
+  ChangeMe: "v3"
+
+Minio:
+  Endpoint: 127.0.0.1:9000
+  AccessKeyId: minioadmin
+  SecretAccessKey: minioadmin
+  UseSSL: false
+  VideoBucketName: tiktok-videos #文件夹Name
+  CoverBucketName: tiktok-video-covers  #文件夹Name
+  AvatarBucketName: tiktok-user-avatars  #文件夹Name
+  BackgroundImageBucketName: tiktok-user-backgrounds  #文件夹Name
+  ExpireTime: 3600 # 视频临时链接过期秒数
