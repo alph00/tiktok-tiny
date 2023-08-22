@@ -20,11 +20,11 @@ func (s *CommentServiceImpl) CommentAction(ctx context.Context, req *comment.Com
 	//TODO  解析token 获取用户id
 	claims, err := Jwt.ParseToken(token)
 	if err != nil {
-		//res := &comment.CommentActionResponse{
-		//	StatusMsg:  "token解析异常",
-		//	StatusCode: -1,
-		//}
-		//return res, nil
+		res := &comment.CommentActionResponse{
+			StatusMsg:  "token解析异常",
+			StatusCode: -1,
+		}
+		return res, nil
 		logger.Errorf("token 解析失败")
 	}
 	userId := claims.Id
