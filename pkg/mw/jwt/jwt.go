@@ -18,10 +18,12 @@ package mw
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	"github.com/alph00/tiktok-tiny/model"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -63,23 +65,28 @@ func InitJwt() {
 			return jwt.MapClaims{}
 		},
 		Authenticator: func(ctx context.Context, c *app.RequestContext) (interface{}, error) {
-			//调用 user.login(ctx context.Context, c *app.RequestContext)
-			//以下为暂时替代login
-			if true {
-				c.JSON(http.StatusOK, utils.H{
-					"status_code": 0,
-					"status_msg":  "登录成功", //res.StatusMsg,
-					"user_id":     1,      //res.UserId,
-				})
+			res := user.Login(ctx, c)
+			if res == -1 {
+				return nil, errors.New("登录失败")
 			} else {
-				c.JSON(http.StatusOK, utils.H{
-					"status_code": -1,
-					"status_msg":  "登录失败", //res.StatusMsg,
-				})
+				return res, nil
 			}
-
 			//以下为暂时替代login
-			return int64(1), nil
+			// if true {
+			// 	c.JSON(http.StatusOK, utils.H{
+			// 		"status_code": 0,
+			// 		"status_msg":  "登录成功", //res.StatusMsg,
+			// 		"user_id":     1,      //res.UserId,
+			// 	})
+			// } else {
+			// 	c.JSON(http.StatusOK, utils.H{
+			// 		"status_code": -1,
+			// 		"status_msg":  "登录失败", //res.StatusMsg,
+			// 	})
+			// }
+
+			// //以下为暂时替代login
+			// return int64(1), nil
 		},
 		IdentityKey: IdentityKey,
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {

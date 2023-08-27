@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
 	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/cloudwego/hertz/pkg/app"
@@ -37,10 +38,21 @@ func main() {
 	tiktok_tiny = r.Group("/douyin")
 	usr = tiktok_tiny.Group("/user")
 	{
-		groupNoAuthUse(usr)
-		// usr.GET("/", user.UserInfo)
-		// usr.POST("/register/", user.Register)
-		usr.POST("/login/", mw.JwtMiddleware.LoginHandler)
+		usrInfo := usr.Group("/")
+		{
+			groupAuthUse(usrInfo)
+			usr.GET("/", user.UserInfo)
+		}
+		usrRegister := usr.Group("/register/")
+		{
+			groupNoAuthUse(usrRegister)
+			usr.POST("/register/", user.Register)
+		}
+		usrLogin := usr.Group("/login/")
+		{
+			groupNoAuthUse(usrLogin)
+			usr.POST("/login/", mw.JwtMiddleware.LoginHandler)
+		}
 	}
 	fed = tiktok_tiny.Group("/feed")
 	{
