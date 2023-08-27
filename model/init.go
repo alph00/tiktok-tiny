@@ -2,9 +2,10 @@ package model
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/bytedance/gopkg/util/logger"
-	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

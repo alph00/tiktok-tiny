@@ -1,19 +1,20 @@
 package viper
 
 import (
+	"fmt"
 	"log"
 
-	V "github.com/spf13/viper"
+	"github.com/spf13/viper"
 )
 
 // TODO 配置项维护与管理
 type Config struct {
-	Viper *V.Viper
+	Viper *viper.Viper
 }
 
 // TODO 读取项目配置文件初始化工作
 func Init(configName string) Config {
-	config := Config{Viper: V.New()}
+	config := Config{Viper: viper.New()}
 	v := config.Viper
 	//TODO 配置文件格式yml
 	v.SetConfigType("yml")
@@ -28,4 +29,17 @@ func Init(configName string) Config {
 		log.Fatalf("errno is %+v", err)
 	}
 	return config
+}
+func Read(configName string) *viper.Viper {
+	v := viper.New()
+	v.SetConfigType("yml")
+	v.SetConfigName(configName)
+	v.AddConfigPath("./config")
+	v.AddConfigPath("../config")
+	v.AddConfigPath("../../config")
+	if err := v.ReadInConfig(); err != nil {
+		// log.Fatalf("errno is %+v", err)
+		fmt.Printf("err: %v\n", err)
+	}
+	return v
 }

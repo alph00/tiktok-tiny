@@ -2,8 +2,6 @@ package rpc
 
 import (
 	"fmt"
-
-	"github.com/alph00/tiktok-tiny/pkg/viper"
 )
 
 func init() {
@@ -25,8 +23,8 @@ func init() {
 
 	// user rpc
 	fmt.Println("运行了init函数")
-	userConfig := viper.Init("user")
-	InitUser(&userConfig)
+	// userConfig := viper.Init("user")
+	// InitUser(&userConfig)
 
 	// // video rpc
 	// videoConfig := viper.Init("video")
