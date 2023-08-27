@@ -5,6 +5,7 @@ import (
 
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
 	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -12,12 +13,10 @@ import (
 	"github.com/cloudwego/hertz/pkg/route"
 )
 
-var (
-	apiServerAddr = "0.0.0.0:8080"
-	// consulAddress = "0.0.0.0:2379"
-)
-
 func main() {
+	apiConfig := viper.Read("service")
+	apiServerAddr := apiConfig.GetString("api-gateway.host") + ":" + apiConfig.GetString("api-gateway.port")
+
 	r := server.New(
 		server.WithHostPorts(apiServerAddr),
 		server.WithHandleMethodNotAllowed(true),
