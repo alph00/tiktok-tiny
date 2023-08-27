@@ -4,6 +4,7 @@ package comment
 
 import (
 	fmt "fmt"
+
 	user "github.com/alph00/tiktok-tiny/kitex_gen/user"
 	fastpb "github.com/cloudwego/fastpb"
 )
@@ -743,4 +744,4 @@ var fieldIDToName_CommentListResponse = map[int32]string{
 	3: "CommentList",
 }
 
-var _ = user.File_user_proto
+// var _ = user.File_user_proto

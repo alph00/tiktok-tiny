@@ -1,8 +1,8 @@
 mysql:
   source: # 主数据库
     driverName: mysql
-    host: 127.0.0.1
-    port: 3307
+    host: 10.130.90.17
+    port: 3308
     database: db_tiktok
     username: root
     password: root
@@ -26,7 +26,7 @@ mysql:
 #    charset: utf8mb4
 
 redis:
-  addr: 127.0.0.1
+  addr: 10.130.90.17
   port: 6379
   password: tiktokRedis
   db: 0 # 数据库编号

@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/alph00/tiktok-tiny/kitex_gen/publish"
 	"github.com/alph00/tiktok-tiny/kitex_gen/publish/publishservice"
 	"github.com/alph00/tiktok-tiny/pkg/etcd"
@@ -18,6 +19,7 @@ var (
 
 func init() {
 	// video rpc
+	fmt.Println("运行了init函数")
 	videoConfig := viper.Init("video")
 	InitVideo(&videoConfig)
 }

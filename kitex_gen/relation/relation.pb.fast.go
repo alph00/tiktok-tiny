@@ -4,6 +4,7 @@ package relation
 
 import (
 	fmt "fmt"
+
 	"github.com/alph00/tiktok-tiny/kitex_gen/user"
 	fastpb "github.com/cloudwego/fastpb"
 )
@@ -1285,4 +1286,4 @@ var fieldIDToName_FriendUser = map[int32]string{
 	13: "FavoriteCount",
 }
 
-var _ = user.File_user_proto
+// var _ = user.File_user_proto

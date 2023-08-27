@@ -1,0 +1,2 @@
+2023-08-24T23:44:17.414+0800	FATAL	user/main.go:45	etcd服务建立成功
+2023-08-27T08:11:59.420-0700	ERROR	service/handler.go:46	该用户名已存在：rmy

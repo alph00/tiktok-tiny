@@ -3,8 +3,10 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+
 	commentHandler "github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/comment"
 	publishHandler "github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/publish"
+	userHandler "github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/bytedance/gopkg/util/logger"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -26,6 +28,12 @@ var (
 func registerGroup(hz *server.Hertz) {
 	douyin := hz.Group("/douyin")
 	{
+		user := douyin.Group("/user")
+		{
+			user.GET("/", userHandler.UserInfo)
+			user.POST("/register/", userHandler.Register)
+			user.POST("/login/", userHandler.Login)
+		}
 
 		publishGroup := douyin.Group("/publish")
 		{
@@ -44,6 +52,7 @@ func registerGroup(hz *server.Hertz) {
 
 func InitHertz() *server.Hertz {
 
+	// 配置监听信息
 	opts := []config.Option{server.WithHostPorts(apiServerAddr)}
 
 	// 网络库
@@ -64,6 +73,7 @@ func InitHertz() *server.Hertz {
 			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 		},
 	}
+	// 这两段因为设置为false，所以不会执行
 	if apiConfig.Viper.GetBool("Hertz.tls.enable") {
 		if len(serverTLSKey) == 0 {
 			panic("not found tiktok_tls_key in configuration")
@@ -115,6 +125,7 @@ func main() {
 
 	// add handler
 	registerGroup(hz)
-
+	fmt.Println("hz路由注册完成,开始启动服务")
 	hz.Spin()
+	fmt.Println("收到请求")
 }
