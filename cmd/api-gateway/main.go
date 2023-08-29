@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/favorite"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
@@ -82,8 +83,8 @@ func main() {
 	fav = tiktok_tiny.Group("/favorite")
 	{
 		groupAuthUse(fav)
-		// fav.POST("/action/", favorite.FavoriteAction)
-		// fav.GET("/list/", favorite.FavoriteList)
+		fav.POST("/action/", favorite.FavoriteAction)
+		fav.GET("/list/", favorite.FavoriteList)
 	}
 	comm = tiktok_tiny.Group("/comment")
 	commAction = comm.Group("/action")

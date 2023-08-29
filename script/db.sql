@@ -2,10 +2,6 @@
 -- password:gorm  
 -- addr:127.0.0.1:3306
 
-
-CREATE DATABASE  IF NOT EXISTS `gorm` 
-USE `gorm`;
-
 -- message
 DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
@@ -45,3 +41,13 @@ CREATE TABLE `users` (
   KEY `idx_user_deleted_at` (`deleted_at`),
   KEY `idx_users_deleted_at` (`deleted_at`)
 );
+
+-- user_favorite_videos   TODO:外键约束
+DROP TABLE IF EXISTS `user_favorite_videos`;
+CREATE TABLE `user_favorite_videos` (
+  `user_id` bigint unsigned NOT NULL,
+  `video_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`user_id`,`video_id`),
+  KEY `idx_videoid` (`video_id`),
+  KEY `idx_userid` (`user_id`)
+); 

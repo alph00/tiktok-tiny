@@ -96,6 +96,7 @@ func Login(ctx context.Context, c *app.RequestContext) int64 {
 
 // UserInfo 用户信息
 func UserInfo(ctx context.Context, c *app.RequestContext) {
+	fmt.Println("调用kitex/kitex_gen")
 	userId := c.Query("user_id")
 	token := c.Query("token")
 	id, err := strconv.ParseInt(userId, 10, 64)
