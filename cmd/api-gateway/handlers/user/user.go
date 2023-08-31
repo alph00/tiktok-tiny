@@ -9,8 +9,11 @@ import (
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/myutil"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/rpc"
 	kitex "github.com/alph00/tiktok-tiny/kitex_gen/user"
+	"github.com/alph00/tiktok-tiny/model"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 func init() {
@@ -90,6 +93,7 @@ func Login(ctx context.Context, c *app.RequestContext) int64 {
 		"status_code": 0,
 		"status_msg":  res.StatusMsg, //res.StatusMsg,
 		"user_id":     res.UserId,
+		"token":       res.Token,
 	})
 	return res.UserId
 }
@@ -105,6 +109,16 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 			"status_code": -1,
 			"status_msg":  "user_id 不合法", //res.StatusMsg,
 			"user":        nil,
+		})
+		return
+	}
+
+	v, _ := c.Get(viper.Read("jwt").GetString("IdentityKey"))
+	myId := int64(v.(*model.User).ID)
+	if myId != id {
+		myutil.ResponseMsg(int(consts.StatusBadRequest), c, utils.H{
+			"status_code": -1,
+			"status_msg":  "user_id不匹配",
 		})
 		return
 	}

@@ -51,3 +51,15 @@ CREATE TABLE `user_favorite_videos` (
   KEY `idx_videoid` (`video_id`),
   KEY `idx_userid` (`user_id`)
 ); 
+
+
+DROP TABLE IF EXISTS `relations`;
+CREATE TABLE `relations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `followed_id` bigint unsigned NOT NULL,
+  `follower_id` bigint unsigned NOT NULL,
+  `created_at` datetime(3) DEFAULT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ;

@@ -37,3 +37,27 @@ func QueryMessageList(date *string, fromUserId int64, ToUserId int64) ([]*Messag
 	// fmt.Println(MessageList)
 	return MessageList, nil
 }
+
+func QueryLastMessageById(fromUserId int64, ToUserId int64) (*Message, error) {
+	// fmt.Println(*date)
+	var MessageLast *Message
+	result := DB.Where("( (from_user_id = ? and to_user_id = ?) or (from_user_id = ? and to_user_id = ?) ) ", fromUserId, ToUserId, ToUserId, fromUserId).Order("created_at desc").Take(&MessageLast)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	// fmt.Println(MessageList)
+	return MessageLast, nil
+}
+
+// func QueryLastMessagesByIds(fromUserId int64, ToUserId []int64) (*Message, error) {
+// 	// fmt.Println(*date)
+// 	var MessageLast *Message
+// 	err := DB.Table("messages a").Joins("INNER JOIN relations b ON a.followed_id = b.follower_id AND a.follower_id = b.followed_id").Pluck("followed_id", &followeds).Error
+
+// 	result := DB.Where("( (from_user_id = ? and to_user_id = ?) or (from_user_id = ? and to_user_id = ?) ) ", fromUserId, ToUserId, ToUserId, fromUserId).Order("created_at desc").Take(&MessageLast)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
+// 	// fmt.Println(MessageList)
+// 	return MessageLast, nil
+// }

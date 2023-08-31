@@ -1,0 +1,3 @@
+IdentityKey: Id
+Key: secret key
+SigningAlgorithm: HS256

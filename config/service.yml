@@ -14,3 +14,7 @@ favorite:
   name: "favorite"
   host: 0.0.0.0
   port: 8085
+relation:
+  name: "relation"
+  host: 0.0.0.0
+  port: 8086

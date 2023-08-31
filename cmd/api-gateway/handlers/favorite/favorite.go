@@ -10,7 +10,7 @@ import (
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/rpc"
 	kitex "github.com/alph00/tiktok-tiny/kitex_gen/favorite"
 	"github.com/alph00/tiktok-tiny/model"
-	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 )
@@ -41,7 +41,7 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 		})
 		return
 	}
-	v, _ := c.Get(mw.IdentityKey)
+	v, _ := c.Get(viper.Read("jwt").GetString("IdentityKey"))
 	fmt.Printf("登录用户ID为：%d\n", int64(v.(*model.User).ID))
 	req := &kitex.FavoriteActionRequest{
 		UserId:     int64(v.(*model.User).ID),

@@ -25,6 +25,7 @@ import (
 
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	"github.com/alph00/tiktok-tiny/model"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
@@ -33,7 +34,8 @@ import (
 
 var (
 	JwtMiddleware *jwt.HertzJWTMiddleware
-	IdentityKey   = "Id"
+	JwtConfig     = viper.Read("jwt")
+	IdentityKey   = JwtConfig.GetString("IdentityKey")
 )
 
 func InitJwt() {
@@ -42,18 +44,18 @@ func InitJwt() {
 		//能返回jwtcookie吗？
 		SendCookie:    true,
 		Realm:         "test zone",
-		Key:           []byte("secret key"),
+		Key:           []byte(JwtConfig.GetString("Key")),
 		Timeout:       time.Hour,
 		MaxRefresh:    time.Hour,
 		TokenLookup:   "query: token, header: Authorization, cookie: jwt",
 		TokenHeadName: "Bearer",
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
-			c.JSON(http.StatusOK, utils.H{
-				// "code":    code,
-				"token": token,
-				// "expire":  expire.Format(time.RFC3339),
-				// "message": "success",
-			})
+			// c.JSON(http.StatusOK, utils.H{
+			// 	// "code":    code,
+			// 	"token": token,
+			// 	// "expire":  expire.Format(time.RFC3339),
+			// 	// "message": "success",
+			// })
 		},
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(int64); ok {

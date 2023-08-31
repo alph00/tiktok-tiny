@@ -5,6 +5,7 @@ import (
 
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/favorite"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/relation"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
 	"github.com/alph00/tiktok-tiny/pkg/viper"
@@ -42,17 +43,17 @@ func main() {
 		usrInfo := usr.Group("/")
 		{
 			groupAuthUse(usrInfo)
-			usr.GET("/", user.UserInfo)
+			usrInfo.GET("", user.UserInfo)
 		}
-		usrRegister := usr.Group("/register/")
+		usrRegister := usr.Group("/register")
 		{
 			groupNoAuthUse(usrRegister)
-			usr.POST("/register/", user.Register)
+			usrRegister.POST("/", user.Register)
 		}
-		usrLogin := usr.Group("/login/")
+		usrLogin := usr.Group("/login")
 		{
 			groupNoAuthUse(usrLogin)
-			usr.POST("/login/", mw.JwtMiddleware.LoginHandler)
+			usrLogin.POST("/", mw.JwtMiddleware.LoginHandler)
 		}
 	}
 	fed = tiktok_tiny.Group("/feed")
@@ -69,10 +70,10 @@ func main() {
 	rel = tiktok_tiny.Group("/relation")
 	{
 		groupAuthUse(rel)
-		// rel.GET("/follower/list/", relation.FollowerList)
-		// rel.GET("/follow/list/", relation.FollowList)
-		// rel.GET("/friend/list/", relation.FriendList)
-		// rel.POST("/action/", relation.RelationAction)
+		rel.GET("/follower/list/", relation.FollowerList)
+		rel.GET("/follow/list/", relation.FollowList)
+		rel.GET("/friend/list/", relation.FriendList)
+		rel.POST("/action/", relation.RelationAction)
 	}
 	pub = tiktok_tiny.Group("/publish")
 	{

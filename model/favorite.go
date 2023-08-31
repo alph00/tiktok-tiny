@@ -1,7 +1,6 @@
 package model
 
 import (
-	// "github.com/bytedance-youthcamp-jbzx/tiktok/pkg/errno"
 	"context"
 	"fmt"
 

@@ -56,7 +56,7 @@ func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.Mes
 	if userId == toUId {
 		res := &message.MessageActionResponse{
 			StatusCode: -1,
-			StatusMsg:  "消息发送失败：不能给自己发送消息",
+			StatusMsg:  "不能给自己发送消息",
 		}
 		return res, nil
 	}
@@ -70,6 +70,13 @@ func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.Mes
 	// 	}
 	// 	return res, nil
 	// }
+	isFriend := model.IfFriend(userId, toUId)
+	if !isFriend {
+		return &message.MessageActionResponse{
+			StatusCode: -1,
+			StatusMsg:  "不是朋友关系，无法发送",
+		}, nil
+	}
 
 	//to do 加密 编码
 	if actType == 1 {

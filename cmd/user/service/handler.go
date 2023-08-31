@@ -8,6 +8,7 @@ import (
 
 	user "github.com/alph00/tiktok-tiny/kitex_gen/user"
 	"github.com/alph00/tiktok-tiny/model"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/alph00/tiktok-tiny/tools"
 	"github.com/bytedance/gopkg/util/logger"
 	"github.com/golang-jwt/jwt"
@@ -75,18 +76,19 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.UserRegisterRe
 
 	// Create the token
 	//这里目前只能支持公玥签发
-	token := jwt.New(jwt.GetSigningMethod("HS256"))
+	jwtConfig := viper.Read("jwt")
+	token := jwt.New(jwt.GetSigningMethod(jwtConfig.GetString("SigningAlgorithm")))
 	claims := token.Claims.(jwt.MapClaims)
-	claims["Id"] = int64(usr.ID)
+	claims[jwtConfig.GetString("IdentityKey")] = int64(usr.ID)
 	expire := time.Now().Add(time.Hour)
 	claims["exp"] = expire.Unix()
 	claims["orig_iat"] = time.Now().Unix()
-	tokenString, err := token.SignedString([]byte("secret key"))
+	tokenString, err := token.SignedString([]byte(jwtConfig.GetString("Key")))
 
 	if err != nil {
 		res := &user.UserRegisterResponse{
 			StatusCode: -1,
-			StatusMsg:  "服务器内部错误：token 创建失败",
+			StatusMsg:  "token 创建失败",
 		}
 		return res, nil
 	}
@@ -126,11 +128,27 @@ func (s *UserServiceImpl) Login(ctx context.Context, req *user.UserLoginRequest)
 		return res, nil
 	}
 
+	jwtConfig := viper.Read("jwt")
+	token := jwt.New(jwt.GetSigningMethod(jwtConfig.GetString("SigningAlgorithm")))
+	claims := token.Claims.(jwt.MapClaims)
+	claims[jwtConfig.GetString("IdentityKey")] = int64(usr.ID)
+	expire := time.Now().Add(time.Hour)
+	claims["exp"] = expire.Unix()
+	claims["orig_iat"] = time.Now().Unix()
+	tokenString, err := token.SignedString([]byte(jwtConfig.GetString("Key")))
+	if err != nil {
+		res := &user.UserLoginResponse{
+			StatusCode: -1,
+			StatusMsg:  "token 创建失败",
+		}
+		return res, nil
+	}
 	// 返回结果
 	res := &user.UserLoginResponse{
 		StatusCode: 0,
 		StatusMsg:  "success",
 		UserId:     int64(usr.ID),
+		Token:      tokenString,
 	}
 	return res, nil
 }
@@ -149,7 +167,7 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReques
 		}
 		return res, nil
 	} else if usr == nil {
-		logger.Errorf("该用户不存在：%v", err.Error())
+		logger.Errorf("该用户不存在：%v")
 		res := &user.UserInfoResponse{
 			StatusCode: -1,
 			StatusMsg:  "该用户不存在",
