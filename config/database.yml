@@ -1,15 +1,15 @@
 mysql:
-  # driverName: mysql
-  # host: 10.130.90.17
-  # port: 3308
-  # database: tiktok
-  # username: root
-  # password: root
-  # charset: utf8mb4
   driverName: mysql
-  host: 127.0.0.1
-  port: 3306
-  database: gorm
-  username: gorm
-  password: gorm
+  host: 10.136.49.224
+  port: 3308
+  database: tiktok
+  username: root
+  password: root
   charset: utf8mb4
+  # driverName: mysql
+  # host: 127.0.0.1
+  # port: 3306
+  # database: gorm
+  # username: gorm
+  # password: gorm
+  # charset: utf8mb4

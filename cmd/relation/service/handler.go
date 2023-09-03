@@ -2,9 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/alph00/tiktok-tiny/kitex_gen/user"
+	"github.com/alph00/tiktok-tiny/pkg/rabbitmq"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 
 	relation "github.com/alph00/tiktok-tiny/kitex_gen/relation"
 	"github.com/alph00/tiktok-tiny/model"
@@ -12,6 +16,20 @@ import (
 
 // RelationServiceImpl implements the last service interface defined in the IDL.
 type RelationServiceImpl struct{}
+
+var (
+	config        = viper.Read("rabbitmq")
+	autoAck       = config.GetBool("consumer.relation.autoAck")
+	RelationMq    = rabbitmq.NewRabbitMQSimple("relation", autoAck)
+	RelationDelMq = rabbitmq.NewRabbitMQSimple("relationdel", autoAck)
+
+	// err        error
+)
+
+func init() {
+	go consume()
+	go Delconsume()
+}
 
 // RelationAction implements the RelationServiceImpl interface.
 func (s *RelationServiceImpl) RelationAction(ctx context.Context, req *relation.RelationActionRequest) (resp *relation.RelationActionResponse, err error) {
@@ -22,27 +40,51 @@ func (s *RelationServiceImpl) RelationAction(ctx context.Context, req *relation.
 	if toUId == nil {
 		return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "该用户不存在"}, nil
 	}
-
+	// 这里直接修改数据库，改为先存入消息队列      但是前面有一个查询数据库的操作，这样这个消息队列存在的意义还大吗
 	if req.ActionType == 1 {
 		if model.IsFollow(req.ToUserId, req.Id) {
 			return &relation.RelationActionResponse{StatusCode: 0, StatusMsg: "已经关注过该用户"}, nil //这样算成功吗？
 		}
-		err := model.Follow(req.ToUserId, req.Id)
-		if err != nil {
-			return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "关注失败"}, err
+		// err := model.Follow(req.ToUserId, req.Id)
+		// if err != nil {
+		// 	return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "关注失败"}, err
+		// }
+		// model.AddFollowerCount(req.ToUserId, 1)
+		// model.AddFollowingCount(req.Id, 1)
+		message := model.Relation{
+			FollowedId: req.ToUserId,
+			FollowerId: req.Id,
 		}
-		model.AddFollowerCount(req.ToUserId, 1)
-		model.AddFollowingCount(req.Id, 1)
+		jsonFC, _ := json.Marshal(message)
+		fmt.Println("Publish new message: ", message)
+		// FavoriteMq := rabbitmq.NewRabbitMQSimple("favorite", true)
+		if err = RelationMq.PublishSimple(ctx, jsonFC); err != nil {
+			log.Printf("消息队列发布错误：%v", err.Error())
+			return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "关注失败"}, err
+
+		}
 	} else if req.ActionType == 2 {
 		if !model.IsFollow(req.ToUserId, req.Id) {
 			return &relation.RelationActionResponse{StatusCode: 0, StatusMsg: "没有关注过该用户"}, nil //这样算成功吗？
 		}
-		err := model.UnFollow(req.ToUserId, req.Id)
-		if err != nil {
-			return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "取消关注失败"}, err
+		// err := model.UnFollow(req.ToUserId, req.Id)
+		// if err != nil {
+		// 	return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "取消关注失败"}, err
+		// }
+		// model.ReduceFollowerCount(req.ToUserId, 1)
+		// model.ReduceFollowingCount(req.Id, 1)
+		message := model.Relation{
+			FollowedId: req.ToUserId,
+			FollowerId: req.Id,
 		}
-		model.ReduceFollowerCount(req.ToUserId, 1)
-		model.ReduceFollowingCount(req.Id, 1)
+		jsonFC, _ := json.Marshal(message)
+		fmt.Println("Publish new message: ", message)
+		// FavoriteMq := rabbitmq.NewRabbitMQSimple("favorite", true)
+		if err = RelationDelMq.PublishSimple(ctx, jsonFC); err != nil {
+			log.Printf("消息队列发布错误：%v", err.Error())
+			return &relation.RelationActionResponse{StatusCode: -1, StatusMsg: "取消关注失败"}, err
+
+		}
 	}
 	return &relation.RelationActionResponse{StatusCode: 0, StatusMsg: "success"}, nil
 }

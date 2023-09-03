@@ -2,15 +2,30 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	favorite "github.com/alph00/tiktok-tiny/kitex_gen/favorite"
 	"github.com/alph00/tiktok-tiny/model"
+	"github.com/alph00/tiktok-tiny/pkg/rabbitmq"
+	"github.com/alph00/tiktok-tiny/pkg/viper"
 )
 
 // FavoriteServiceImpl implements the last service interface defined in the IDL.
 type FavoriteServiceImpl struct{}
+
+var (
+	config     = viper.Read("rabbitmq")
+	autoAck    = config.GetBool("consumer.favorite.autoAck")
+	FavoriteMq = rabbitmq.NewRabbitMQSimple("favorite", autoAck)
+	// err        error
+)
+
+func init() {
+	go consume()
+}
 
 // FavoriteAction implements the FavoriteServiceImpl interface.
 func (s *FavoriteServiceImpl) FavoriteAction(ctx context.Context, req *favorite.FavoriteActionRequest) (resp *favorite.FavoriteActionResponse, err error) {
@@ -28,16 +43,40 @@ func (s *FavoriteServiceImpl) FavoriteAction(ctx context.Context, req *favorite.
 	fmt.Println("调用favorite微服务handler下的FavoriteAction函数")
 	if actType == 1 {
 		fmt.Println("acttype=1,来创建点赞数据")
-		err := model.CreateVideoFavorite(ctx, &model.FavoriteVideoRelation{
+		// 这里不直接修改数据库，而是传递给消息队列，等消费
+		// err := model.CreateVideoFavorite(ctx, &model.FavoriteVideoRelation{
+		// 	UserID:  uint(UserId),
+		// 	VideoID: uint(VideoID),
+		// })
+		message := model.FavoriteVideoRelation{
 			UserID:  uint(UserId),
 			VideoID: uint(VideoID),
-		})
-		if err != nil {
-			res := &favorite.FavoriteActionResponse{
-				StatusCode: -1,
-				StatusMsg:  "向数据库创建点赞视频数据failure",
+		}
+
+		jsonFC, _ := json.Marshal(message)
+		fmt.Println("Publish new message: ", message)
+		// FavoriteMq := rabbitmq.NewRabbitMQSimple("favorite", true)
+		if err = FavoriteMq.PublishSimple(ctx, jsonFC); err != nil {
+			log.Printf("消息队列发布错误：%v", err.Error())
+			if strings.Contains(err.Error(), "连接断开") {
+				// 检测到通道关闭，则重连
+				go FavoriteMq.Destroy()
+				FavoriteMq = rabbitmq.NewRabbitMQSimple("favorite", true)
+				// 这里应该再重传一次吧TODO
+				log.Print("消息队列通道关闭，正在重连")
+				go consume()
+				res := &favorite.FavoriteActionResponse{
+					StatusCode: 0,
+					StatusMsg:  "success",
+				}
+				return res, nil
+			} else {
+				res := &favorite.FavoriteActionResponse{
+					StatusCode: -1,
+					StatusMsg:  "向数据库创建点赞视频数据failure",
+				}
+				return res, nil
 			}
-			return res, nil
 		}
 	} else {
 		fmt.Println("acttype=0,来取消点赞数据")
