@@ -4,11 +4,10 @@ import (
 	"log"
 	"net"
 
+	"github.com/alph00/tiktok-tiny/cmd/favorite/service"
 	favorite "github.com/alph00/tiktok-tiny/kitex_gen/favorite/favoriteservice"
 	"github.com/alph00/tiktok-tiny/pkg/consul"
 	"github.com/alph00/tiktok-tiny/pkg/viper"
-
-	// "github.com/bytedance-youthcamp-jbzx/tiktok/cmd/favorite/service"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
 )
@@ -28,7 +27,7 @@ func main() {
 	addr, err := net.ResolveTCPAddr("tcp", favoriteServiceAddr)
 	serviceName := favoriteServiceConfig.GetString("favorite.name")
 
-	svr := favorite.NewServer(new(FavoriteServiceImpl),
+	svr := favorite.NewServer(new(service.FavoriteServiceImpl),
 		server.WithServiceAddr(addr),
 		server.WithRegistry(registry),
 		//server.WithLimit(&limit.Option{MaxConnections: 1000, MaxQPS: 100}),
