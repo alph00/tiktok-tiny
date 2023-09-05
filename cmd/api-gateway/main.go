@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/comment"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/favorite"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/feed"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
@@ -93,12 +94,12 @@ func main() {
 	commAction = comm.Group("/action")
 	{
 		groupAuthUse(commAction)
-		// commAction.POST("/", comment.CommentAction)
+		commAction.POST("/", comment.CommentAction)
 	}
 	commList = comm.Group("/list")
 	{
 		groupNoAuthUse(commList)
-		// commList.GET("/", comment.CommentList)
+		commList.GET("/", comment.CommentList)
 	}
 	r.Spin()
 }
