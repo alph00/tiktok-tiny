@@ -14,14 +14,6 @@ type FavoriteServiceImpl struct{}
 
 // FavoriteAction implements the FavoriteServiceImpl interface.
 func (s *FavoriteServiceImpl) FavoriteAction(ctx context.Context, req *favorite.FavoriteActionRequest) (resp *favorite.FavoriteActionResponse, err error) {
-	// TODO: Your code here...
-	// 这里的设置是req为
-	// UserId:     int64(v.(*model.User).ID),
-	//  Token:      token,
-	// 	VideoId:    id,
-	// 	ActionType: int32(acttype),
-	// 通过token得到点赞人的数据ID，只对Video做点赞处理，那么对于作者的  ‘获赞总数’ 还需要保证数据库一致性，之后数据访问还需要来查找Video
-	// 需要同时修改两个数据库  users和videos   A----->B.video    A.favotite_count++    B.video.favotite_count++
 	UserId := req.UserId
 	VideoID := req.VideoId
 	actType := req.ActionType

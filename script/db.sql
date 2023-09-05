@@ -63,3 +63,60 @@ CREATE TABLE `relations` (
   `deleted_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ;
+
+DROP TABLE IF EXISTS `videos`;
+CREATE TABLE `videos` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `play_url` varchar(255) NOT NULL,
+  `cover_url` varchar(255) NOT NULL,
+  `favorite_count` bigint unsigned NOT NULL DEFAULT '0',
+  `comment_count` bigint unsigned NOT NULL DEFAULT '0',
+  `title` varchar(50) NOT NULL,
+  `author_id` bigint unsigned NOT NULL,
+  `created_at` datetime(3) NOT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE `comments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `content` varchar(255) NOT NULL,
+  `video_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `created_at` datetime(3) NOT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  `like_count` bigint unsigned NOT NULL DEFAULT '0',
+  `tease_count` bigint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ;
+
+DROP TABLE IF EXISTS `user_favorite_comments`;
+CREATE TABLE `user_favorite_comments` (
+  `user_id` bigint unsigned NOT NULL,
+  `comment_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`user_id`,`comment_id`)
+);
+
+DROP TABLE IF EXISTS `user_favorite_videos`;
+CREATE TABLE `user_favorite_videos` (
+  `user_id` bigint unsigned NOT NULL,
+  `video_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`user_id`,`video_id`)
+) ;
+
+DROP TABLE IF EXISTS `comments`;
+CREATE TABLE `comments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `content` varchar(255) NOT NULL,
+  `video_id` bigint unsigned NOT NULL,
+  `user_id` bigint unsigned NOT NULL,
+  `created_at` datetime(3) NOT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  `like_count` bigint unsigned NOT NULL DEFAULT '0',
+  `tease_count` bigint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ;

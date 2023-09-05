@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/favorite"
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/feed"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/message"
+	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/publish"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/relation"
 	"github.com/alph00/tiktok-tiny/cmd/api-gateway/handlers/user"
 	mw "github.com/alph00/tiktok-tiny/pkg/mw/jwt"
@@ -59,7 +61,7 @@ func main() {
 	fed = tiktok_tiny.Group("/feed")
 	{
 		groupNoAuthUse(fed)
-		// fed.GET("/", feed.Feed)
+		fed.GET("/", feed.Feed)
 	}
 	msg = tiktok_tiny.Group("/message")
 	{
@@ -78,8 +80,8 @@ func main() {
 	pub = tiktok_tiny.Group("/publish")
 	{
 		groupAuthUse(pub)
-		// pub.GET("/list/", publish.PublishList)
-		// pub.POST("/action/", publish.PublishAction)
+		pub.GET("/list/", publish.PublishList)
+		pub.POST("/action/", publish.PublishAction)
 	}
 	fav = tiktok_tiny.Group("/favorite")
 	{

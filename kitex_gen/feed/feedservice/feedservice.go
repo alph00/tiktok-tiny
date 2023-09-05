@@ -4,7 +4,6 @@ package feedservice
 
 import (
 	"context"
-
 	feed "github.com/alph00/tiktok-tiny/kitex_gen/feed"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"

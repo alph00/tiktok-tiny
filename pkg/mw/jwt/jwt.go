@@ -19,7 +19,6 @@ package mw
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -103,10 +102,10 @@ func InitJwt() {
 			return e.Error()
 		},
 		Unauthorized: func(ctx context.Context, c *app.RequestContext, code int, message string) {
-			fmt.Printf("message: %v\n", message)
+			// fmt.Printf("message: %v\n", message)
 			c.JSON(http.StatusOK, utils.H{
-				"code":    code,
-				"message": message,
+				"status_code": code, //要不要改成-1？
+				"status_msg":  message,
 			})
 		},
 	})

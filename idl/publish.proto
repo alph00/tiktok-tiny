@@ -4,30 +4,27 @@ package publish;
 
 import "feed.proto";
 
-//  ===============================视频投稿==================================
-message PublishActionRequest{
+message PublishActionRequest {
   string token = 1;
   bytes data = 2;
   string title = 3;
+  int64 id = 4;
 }
 message PublishActionResponse {
   int32 status_code = 1;
   string status_msg = 2;
 }
 
-//  ===============================发布列表==================================
-message PublishListRequest{
+message PublishListRequest {
   int64 user_id = 1;
   string token = 2;
 }
-message PublishListResponse{
+message PublishListResponse {
   int32 status_code = 1;
   string status_msg = 2;
   repeated feed.Video video_list = 3;
 }
 service PublishService {
-  rpc PublishAction (PublishActionRequest) returns (PublishActionResponse);
-  rpc PublishList (PublishListRequest) returns (PublishListResponse);
+  rpc PublishAction(PublishActionRequest) returns (PublishActionResponse);
+  rpc PublishList(PublishListRequest) returns (PublishListResponse);
 }
-
-

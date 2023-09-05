@@ -8,6 +8,7 @@ import (
 
 	user "github.com/alph00/tiktok-tiny/kitex_gen/user"
 	"github.com/alph00/tiktok-tiny/model"
+	"github.com/alph00/tiktok-tiny/pkg/minio"
 	"github.com/alph00/tiktok-tiny/pkg/viper"
 	"github.com/alph00/tiktok-tiny/tools"
 	"github.com/bytedance/gopkg/util/logger"
@@ -40,8 +41,12 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.UserRegisterRe
 	usr = &model.User{
 		UserName: req.Username,
 		Password: tools.Md5Encrypt(req.Password),
-		Avatar:   fmt.Sprintf("default%d.png", rand.Intn(10)),
+		// Avatar:   fmt.Sprintf("default%d.png", rand.Intn(10)),
 	}
+	usr.Avatar = fmt.Sprintf("default%d.png", usr.ID)
+	usr.BackgroundImage = fmt.Sprintf("default_background%d.png", usr.ID)
+	usr.Signature = "好好学习，天天向上"
+
 	if err := model.CreateUser(ctx, usr); err != nil {
 		res := &user.UserRegisterResponse{
 			StatusCode: -1,
@@ -49,30 +54,6 @@ func (s *UserServiceImpl) Register(ctx context.Context, req *user.UserRegisterRe
 		}
 		return res, nil
 	}
-
-	//if err := db.CreateUsers(ctx, []*db.User{{
-	//	UserName: req.Username,
-	//	Password: tool.Md5Encrypt(req.Password),
-	//	Avatar:   fmt.Sprintf("default%d.png", rand.Intn(10)),
-	//}}); err != nil {
-	//	logger.Errorf("发生错误：%v", err.Error())
-	//	res := &user.UserRegisterResponse{
-	//		StatusCode: -1,
-	//		StatusMsg:  "注册失败：服务器内部错误",
-	//	}
-	//	return res, nil
-	//}
-
-	// 获取用户id
-	//usr, err = db.GetUserByName(ctx, req.Username)
-	//if err != nil || usr == nil {
-	//	logger.Errorf("发生错误：%v", err.Error())
-	//	res := &user.UserRegisterResponse{
-	//		StatusCode: -1,
-	//		StatusMsg:  "注册失败：服务器内部错误",
-	//	}
-	//	return res, nil
-	//}
 
 	// Create the token
 	//这里目前只能支持公玥签发
@@ -175,41 +156,31 @@ func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.UserInfoReques
 		return res, nil
 	}
 
-	// avatar, err := minio.GetFileTemporaryURL(minio.AvatarBucketName, usr.Avatar)
-	// if err != nil {
-	// 	logger.Errorf("Minio获取头像失败：%v", err.Error())
-	// 	res := &user.UserInfoResponse{
-	// 		StatusCode: -1,
-	// 		StatusMsg:  "服务器内部错误：获取头像失败",
-	// 	}
-	// 	return res, nil
-	// }
-	// backgroundImage, err := minio.GetFileTemporaryURL(minio.BackgroundImageBucketName, usr.BackgroundImage)
-	// if err != nil {
-	// 	logger.Errorf("Minio获取背景图失败：%v", err.Error())
-	// 	res := &user.UserInfoResponse{
-	// 		StatusCode: -1,
-	// 		StatusMsg:  "服务器内部错误：获取背景图失败",
-	// 	}
-	// 	return res, nil
-	// }
+	avatar, err := minio.GetFileTemporaryURL(minio.Avatar, usr.Avatar)
+	if err != nil {
+		return &user.UserInfoResponse{StatusCode: -1, StatusMsg: "获取头像失败"}, nil
+	}
+	backgroundImage, err := minio.GetFileTemporaryURL(minio.BackgroundImage, usr.BackgroundImage)
+	if err != nil {
+		return &user.UserInfoResponse{StatusCode: -1, StatusMsg: "获取背景图失败"}, nil
+	}
 
 	//返回结果
 	res := &user.UserInfoResponse{
 		StatusCode: 0,
 		StatusMsg:  "success",
 		User: &user.User{
-			Id:            int64(usr.ID),
-			Name:          usr.UserName,
-			FollowCount:   int64(usr.FollowingCount),
-			FollowerCount: int64(usr.FollowerCount),
-			IsFollow:      userID == int64(usr.ID),
-			// Avatar:          avatar,
-			// BackgroundImage: backgroundImage,
-			Signature:      usr.Signature,
-			TotalFavorited: int64(usr.TotalFavorited),
-			WorkCount:      int64(usr.WorkCount),
-			FavoriteCount:  int64(usr.FavoriteCount),
+			Id:              int64(usr.ID),
+			Name:            usr.UserName,
+			FollowCount:     int64(usr.FollowingCount),
+			FollowerCount:   int64(usr.FollowerCount),
+			IsFollow:        userID == int64(usr.ID),
+			Avatar:          avatar,
+			BackgroundImage: backgroundImage,
+			Signature:       usr.Signature,
+			TotalFavorited:  int64(usr.TotalFavorited),
+			WorkCount:       int64(usr.WorkCount),
+			FavoriteCount:   int64(usr.FavoriteCount),
 		},
 	}
 	return res, nil

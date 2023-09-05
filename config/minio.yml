@@ -1,7 +1,9 @@
 endpoint: 0.0.0.0:9000
 accessKeyId: minio
-secretAccessKey: minio
+secretAccessKey: 12345678
 useSSL: false
 avatarBucketName: avatars
-backgroundImageBucketName: backgroundImages
+backgroundImageBucketName: bgimages
+videoBucketName: videos
+coverBucketName: video-covers
 expire: 60

@@ -18,3 +18,16 @@ relation:
   name: "relation"
   host: 0.0.0.0
   port: 8086
+feed:
+  name: "feed"
+  host: 0.0.0.0
+  port: 8087
+publish:
+  name: "publish"
+  host: 0.0.0.0
+  port: 8088
+  videoMaxSize: 50
+comment:
+  name: "comment"
+  host: 0.0.0.0
+  port: 8089

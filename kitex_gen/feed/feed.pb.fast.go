@@ -4,7 +4,6 @@ package feed
 
 import (
 	fmt "fmt"
-
 	user "github.com/alph00/tiktok-tiny/kitex_gen/user"
 	fastpb "github.com/cloudwego/fastpb"
 )
@@ -126,6 +125,16 @@ func (x *FeedRequest) FastRead(buf []byte, _type int8, number int32) (offset int
 		if err != nil {
 			goto ReadFieldError
 		}
+	case 3:
+		offset, err = x.fastReadField3(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
+	case 4:
+		offset, err = x.fastReadField4(buf, _type)
+		if err != nil {
+			goto ReadFieldError
+		}
 	default:
 		offset, err = fastpb.Skip(buf, _type, number)
 		if err != nil {
@@ -146,6 +155,16 @@ func (x *FeedRequest) fastReadField1(buf []byte, _type int8) (offset int, err er
 
 func (x *FeedRequest) fastReadField2(buf []byte, _type int8) (offset int, err error) {
 	x.Token, offset, err = fastpb.ReadString(buf, _type)
+	return offset, err
+}
+
+func (x *FeedRequest) fastReadField3(buf []byte, _type int8) (offset int, err error) {
+	x.Id, offset, err = fastpb.ReadInt64(buf, _type)
+	return offset, err
+}
+
+func (x *FeedRequest) fastReadField4(buf []byte, _type int8) (offset int, err error) {
+	x.HasLogin, offset, err = fastpb.ReadBool(buf, _type)
 	return offset, err
 }
 
@@ -294,6 +313,8 @@ func (x *FeedRequest) FastWrite(buf []byte) (offset int) {
 	}
 	offset += x.fastWriteField1(buf[offset:])
 	offset += x.fastWriteField2(buf[offset:])
+	offset += x.fastWriteField3(buf[offset:])
+	offset += x.fastWriteField4(buf[offset:])
 	return offset
 }
 
@@ -310,6 +331,22 @@ func (x *FeedRequest) fastWriteField2(buf []byte) (offset int) {
 		return offset
 	}
 	offset += fastpb.WriteString(buf[offset:], 2, x.GetToken())
+	return offset
+}
+
+func (x *FeedRequest) fastWriteField3(buf []byte) (offset int) {
+	if x.Id == 0 {
+		return offset
+	}
+	offset += fastpb.WriteInt64(buf[offset:], 3, x.GetId())
+	return offset
+}
+
+func (x *FeedRequest) fastWriteField4(buf []byte) (offset int) {
+	if !x.HasLogin {
+		return offset
+	}
+	offset += fastpb.WriteBool(buf[offset:], 4, x.GetHasLogin())
 	return offset
 }
 
@@ -443,6 +480,8 @@ func (x *FeedRequest) Size() (n int) {
 	}
 	n += x.sizeField1()
 	n += x.sizeField2()
+	n += x.sizeField3()
+	n += x.sizeField4()
 	return n
 }
 
@@ -459,6 +498,22 @@ func (x *FeedRequest) sizeField2() (n int) {
 		return n
 	}
 	n += fastpb.SizeString(2, x.GetToken())
+	return n
+}
+
+func (x *FeedRequest) sizeField3() (n int) {
+	if x.Id == 0 {
+		return n
+	}
+	n += fastpb.SizeInt64(3, x.GetId())
+	return n
+}
+
+func (x *FeedRequest) sizeField4() (n int) {
+	if !x.HasLogin {
+		return n
+	}
+	n += fastpb.SizeBool(4, x.GetHasLogin())
 	return n
 }
 
@@ -521,6 +576,8 @@ var fieldIDToName_Video = map[int32]string{
 var fieldIDToName_FeedRequest = map[int32]string{
 	1: "LatestTime",
 	2: "Token",
+	3: "Id",
+	4: "HasLogin",
 }
 
 var fieldIDToName_FeedResponse = map[int32]string{
@@ -530,4 +587,4 @@ var fieldIDToName_FeedResponse = map[int32]string{
 	4: "NextTime",
 }
 
-// var _ = user.File_user_proto
+var _ = user.File_user_proto
