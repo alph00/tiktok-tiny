@@ -6,4 +6,4 @@ avatarBucketName: avatars
 backgroundImageBucketName: bgimages
 videoBucketName: videos
 coverBucketName: video-covers
-expire: 60
+expire: 3600
