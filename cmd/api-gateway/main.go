@@ -98,7 +98,7 @@ func main() {
 	}
 	commList = comm.Group("/list")
 	{
-		groupNoAuthUse(commList)
+		groupAuthUse(commList)
 		commList.GET("/", comment.CommentList)
 	}
 	r.Spin()
