@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/alph00/tiktok-tiny/kitex_gen/feed"
@@ -77,6 +78,7 @@ func (s *FeedServiceImpl) Feed(ctx context.Context, req *feed.FeedRequest) (resp
 			Title:         video.Title,
 		})
 	}
+	fmt.Printf("videoList: %v\n", videoList)
 	if len(videos) != 0 {
 		nextTime = videos[len(videos)-1].UpdatedAt.UnixMilli()
 	}

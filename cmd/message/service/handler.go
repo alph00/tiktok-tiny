@@ -61,15 +61,6 @@ func (s *MessageServiceImpl) MessageAction(ctx context.Context, req *message.Mes
 		return res, nil
 	}
 
-	// relation, err := model.GetRelationByUserIDs(ctx, userId, toUId)
-	// if relation == nil {
-	// 	logger.Errorf("消息发送失败：非朋友关系，无法发送")
-	// 	res := &message.MessageActionResponse{
-	// 		StatusCode: -1,
-	// 		StatusMsg:  "消息发送失败：非朋友关系，无法发送",
-	// 	}
-	// 	return res, nil
-	// }
 	isFriend := model.IfFriend(userId, toUId)
 	if !isFriend {
 		return &message.MessageActionResponse{

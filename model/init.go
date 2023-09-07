@@ -7,8 +7,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-// var dsn = "gorm:gorm@tcp(localhost:9910)/gorm?charset=utf8&parseTime=True&loc=Local"
-
 var DB *gorm.DB
 
 func init() {

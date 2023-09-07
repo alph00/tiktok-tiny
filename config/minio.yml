@@ -1,4 +1,5 @@
-endpoint: 0.0.0.0:9000
+endpoint: 192.168.197.130:9000
+# endpoint: 154.8.205.192:9000
 accessKeyId: minio
 secretAccessKey: 12345678
 useSSL: false

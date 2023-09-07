@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alph00/tiktok-tiny/kitex_gen/user"
+	"github.com/alph00/tiktok-tiny/pkg/minio"
 
 	relation "github.com/alph00/tiktok-tiny/kitex_gen/relation"
 	"github.com/alph00/tiktok-tiny/model"
@@ -137,7 +138,7 @@ func (s *RelationServiceImpl) FriendList(ctx context.Context, req *relation.Rela
 			// res := &relation.RelationFriendListResponse{StatusCode: -1, StatusMsg: "获取好友列表MESSAGE失败"}
 			// return res, err
 			msgContent = ""
-			msgType = -1
+			msgType = 0
 		} else {
 			msgContent = msg.Content
 			if msg.FromUserID == req.UserId {
@@ -146,22 +147,27 @@ func (s *RelationServiceImpl) FriendList(ctx context.Context, req *relation.Rela
 				msgType = 0
 			}
 		}
+		avatar, err := minio.GetFileTemporaryURL(minio.Avatar, friend.Avatar)
+		fmt.Printf("err: %v\n", err)
+		backgroundImage, err := minio.GetFileTemporaryURL(minio.BackgroundImage, friend.BackgroundImage)
+		fmt.Printf("err: %v\n", err)
 		userList = append(userList, &relation.FriendUser{
-			Id:            int64(friend.ID),
-			Name:          friend.UserName,
-			FollowCount:   int64(friend.FollowingCount),
-			FollowerCount: int64(friend.FollowerCount),
-			IsFollow:      true,
-			// Avatar:          avatar,//to do
-			// BackgroundImage: backgroundUrl,//to do
-			Signature:      friend.Signature,
-			TotalFavorited: int64(friend.TotalFavorited),
-			WorkCount:      int64(friend.WorkCount),
-			FavoriteCount:  int64(friend.FavoriteCount),
-			Message:        msgContent,
-			MsgType:        msgType,
+			Id:              int64(friend.ID),
+			Name:            friend.UserName,
+			FollowCount:     int64(friend.FollowingCount),
+			FollowerCount:   int64(friend.FollowerCount),
+			IsFollow:        true,
+			Avatar:          avatar,          //to do
+			BackgroundImage: backgroundImage, //to do
+			Signature:       friend.Signature,
+			TotalFavorited:  int64(friend.TotalFavorited),
+			WorkCount:       int64(friend.WorkCount),
+			FavoriteCount:   int64(friend.FavoriteCount),
+			Message:         msgContent,
+			MsgType:         msgType,
 		})
 	}
+	fmt.Printf("userList: %v\n", userList)
 	return &relation.RelationFriendListResponse{
 		StatusCode: 0,
 		StatusMsg:  "success",

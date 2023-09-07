@@ -44,13 +44,9 @@ func GetLatestTimeVideos(ctx context.Context, limit int, latestTime *int64) ([]*
 	return results, nil
 }
 
-// TODO 根据视频id获取视频信息
 func GetVideoInfoById(ctx context.Context, videoId int64) (*Video, error) {
-	//TODO 数据库实例
 	video := new(Video)
-	//TODO 查询语句
 	err := DB.Clauses(dbresolver.Read).WithContext(ctx).Where("id", videoId).First(&video).Error
-	//TODO 异常处理
 	if err == nil {
 		return video, nil
 	} else if err == gorm.ErrRecordNotFound {

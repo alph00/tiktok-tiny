@@ -21,7 +21,6 @@ func (FavoriteVideoRelation) TableName() string {
 }
 
 func CreateVideoFavorite(ctx context.Context, favorite_video_data *FavoriteVideoRelation) error {
-	// TODO:这里使用事务
 	fmt.Println("开始访问数据库，创建一条点赞数据")
 	err := DB.Clauses(dbresolver.Write).WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(favorite_video_data).Error
@@ -82,14 +81,10 @@ func DelVideoFavorite(ctx context.Context, favorite_video_data *FavoriteVideoRel
 			return res.Error
 		}
 
-		//3.改变 user 表中的 favorite count
 		res2 := tx.Model(&User{}).Where("id = ?", favorite_video_data.UserID).Update("favorite_count", gorm.Expr("favorite_count - ?", 1))
 		if res2.Error != nil {
 			return err
 		}
-		// if res.RowsAffected != 1 {
-		// 	return errno.ErrDatabase
-		// }
 		fmt.Println("修改点赞人user表成功，创建一条点赞数据成功")
 
 		//4.改变 user 表中的 total_favorited  TODO:这里涉及到查询authorID，基本框架没问题
@@ -119,12 +114,11 @@ func ShowVideoFavorite(ctx context.Context, UserId uint) ([]uint, error) {
 		return nil, err
 	}
 
-	defer rows.Close() // 一定要记得关闭迭代器
+	defer rows.Close()
 
 	for rows.Next() {
 		var video_id uint
 		if err := rows.Scan(&video_id); err != nil {
-			// 处理扫描错误
 			fmt.Println("扫描错误")
 		}
 		fmt.Println("VideoID:", video_id)

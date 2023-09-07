@@ -18,7 +18,6 @@ CREATE TABLE `messages` (
   KEY `idx_messages_deleted_at` (`deleted_at`),
   KEY `idx_messages_created_at` (`created_at`)); 
 
--- user
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -42,7 +41,6 @@ CREATE TABLE `users` (
   KEY `idx_users_deleted_at` (`deleted_at`)
 );
 
--- user_favorite_videos   TODO:外键约束
 DROP TABLE IF EXISTS `user_favorite_videos`;
 CREATE TABLE `user_favorite_videos` (
   `user_id` bigint unsigned NOT NULL,
